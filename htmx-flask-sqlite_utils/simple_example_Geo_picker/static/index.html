@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>HTMX Cascading Dropdown (Learning Example)</title>
+    <!-- HTMX: The only JS library we need to handle all AJAX requests -->
+    <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+</head>
+
+<!-- 
+    - body hx-get="/continents": Calls /continents when the page loads
+    - hx-trigger="load": Fires the call automatically on startup
+    - hx-target="#continent-div": Puts the response inside the Continent span 
+-->
+<body hx-get="/continents" hx-trigger="load" hx-target="#continent-div">
+    <h1>Geo Picker</h1>
+    
+    <!-- 1. Continent area: Will hold the first dropdown when the page loads -->
+    <p>1. Continent: <span id="continent-div">Loading...</span></p>
+    
+    <!-- 2. Country area: Will hold the country dropdown after picking a continent -->
+    <p>2. Country: <span id="country-div">Select a continent first</span></p>
+    
+    <!-- 3. City area: Will hold the city dropdown after picking a country -->
+    <p>3. City: <span id="city-div">Select a country first</span></p>
+    
+    <hr>
+    
+    <!-- Result area: Will display "Selected: CityName" after the final pick -->
+    <div id="result"></div>
+</body>
+</html>
