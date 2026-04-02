@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTMX Scattered Inputs (JSON) + Flask</title>
+    <!-- Include HTMX library & JSON Encoding Extension -->
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.10/dist/ext/json-enc.js"></script>
+    <style>
+        body { font-family: sans-serif; max-width: 600px; margin: 2rem auto; padding: 0 1rem; }
+        header, main, footer, section { margin-bottom: 1.5rem; padding: 1rem; border: 1px dashed #ccc; border-radius: 8px; }
+        input, textarea, select { padding: 0.5rem; width: 100%; box-sizing: border-box; margin-top: 0.5rem; }
+        button.action-btn { padding: 0.75rem 1rem; cursor: pointer; background: #28a745; color: white; border: none; border-radius: 4px; font-weight: bold; width: 100%; }
+        button.action-btn:hover { background: #218838; }
+        
+        article.note-item { display: flex; justify-content: space-between; align-items: start; padding: 1rem; border: 1px solid #ddd; margin-bottom: 0.75rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .delete-btn { background: #dc3545; padding: 0.5rem 1rem; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.85rem; }
+        .delete-btn:hover { background: #c82333; }
+        .priority-badge { font-size: 0.8rem; background: #e9ecef; padding: 0.2rem 0.5rem; border-radius: 10px; margin-left: 0.5rem; }
+    </style>
+</head>
+<body>
+    <h1>Scattered Inputs (JSON)</h1>
+    <p>Notice how inputs are in entirely different semantic sections (header, main). We aren't wrapping them in logic groups!</p>
+    
+    <header>
+        <label>Provide a Title:</label>
+        <input type="text" id="note-title" name="title" placeholder="A scattered title...">
+    </header>
+
+    <main>
+        <label>Detailed Content:</label>
+        <!-- Notice we are gathering different kinds of HTML tags (textarea & select) -->
+        <textarea id="note-content" name="content" rows="3" placeholder="A scattered textarea content..."></textarea>
+        
+        <br><br>
+
+        <label>Urgency Level:</label>
+        <select id="note-priority" name="priority">
+            <option value="Normal">Normal</option>
+            <option value="High">High</option>
+            <option value="Low">Low</option>
+        </select>
+    </main>
+
+    <footer>
+        <!-- 
+          hx-include collects by standard CSS Selectors!
+          By using comma-separation, we pluck exactly the elements we want 
+          from totally different places in the DOM.
+        -->
+        <button 
+            class="action-btn"
+            hx-ext="json-enc"
+            hx-post="/add" 
+            hx-include="#note-title, #note-content, #note-priority"
+            hx-target="#notes-list" 
+            hx-swap="innerHTML"
+            hx-on::after-request="document.getElementById('note-title').value = ''; document.getElementById('note-content').value = ''">
+            Gather Elements & Submit JSON
+        </button>
+    </footer>
+
+    <!-- And to avoid divs entirely, we use a section block for the actual notes -->
+    <section id="notes-list" hx-get="/notes" hx-trigger="load">
+        <p style="color: #999; font-style: italic;">Loading notes...</p>
+    </section>
+</body>
+</html>
